@@ -17,10 +17,19 @@ describe('Algebra test', function () {
     const {deployments, getNamedAccounts} = hre;
     const {deploy} = deployments;
 
+    it("Minimal math test", async function () {
+        await deployments.fixture(['testMinimalMathFixture']);
+        let minimalMath = await ethers.getContract('TestMinimalMath');
+//        let result = await minimalMath.test_addition(2, 3, {gasLimit: 30_500_000});
+        let result = await minimalMath.test_addition(10, 6, {gasLimit: 30_500_000});
+        let receipt = await result.wait();
+        console.log(receipt);
+    });
+
     it("Field math", async function () {
         await deployments.fixture(['testFieldMathFixture']);
         let fieldMath = await ethers.getContract('TestFieldMath');
-        await fieldMath.test_log2_ceil({gasLimit: 30_500_000});
+        let result = await fieldMath.test_log2_ceil({gasLimit: 30_500_000});
     });
 
     it("Transcript", async function () {

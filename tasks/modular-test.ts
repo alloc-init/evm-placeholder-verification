@@ -66,11 +66,14 @@ function loadPublicInput(public_input_path: string) {
         let public_input = fs.readFileSync(public_input_path, 'utf8').trim();
         let result = [];
         for (let string_item of public_input.split(/\s+/)) {
-            result.push(BigInt(string_item))
+            // If is necessary for the case if there is no numbers in the file
+            if( string_item != "")
+                result.push(BigInt(string_item))
         }
+        console.log(result)
         return result;
     } else
-        return [];
+        return null;
 }
 
 const verify_circuit_proof = async (modular_path: string, circuit: string) => {
@@ -93,6 +96,10 @@ const verify_circuit_proof = async (modular_path: string, circuit: string) => {
     console.log("Verify :", proof_path);
     let proof = loadProof(proof_path);
     let public_input = loadPublicInput(folder_path + "/public_input.inp");
+    if (public_input === null) {
+        console.log("Wrong public input format!");
+        return null;
+    }
     let receipt = await (await verifier_contract.verify(proof, public_input, {gasLimit: 30_500_000})).wait();
     console.log("⛽Gas used: ", receipt.gasUsed.toNumber());
     console.log("Events received:");
